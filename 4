@@ -1,0 +1,177 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+struct Book {
+    std::string author;
+    std::string title;
+    int year;
+    std::string publisher;
+    int pages;
+};
+
+void loadDataFromFile(std::vector<Book>& books) {
+    std::string filename;
+    std::cout << "Enter the filename: ";
+    std::cin >> filename;
+
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        Book book;
+        while (file >> book.author >> book.title >> book.year >> book.publisher >> book.pages) {
+            books.push_back(book);
+        }
+        file.close();
+        std::cout << "Data loaded successfully!" << std::endl;
+    } else {
+        std::cout << "Failed to open the file." << std::endl;
+    }
+}
+
+void enterNewData(std::vector<Book>& books) {
+    std::string filename;
+    std::cout << "Enter the filename: ";
+    std::cin >> filename;
+
+    std::ofstream file(filename, std::ios::app);
+    if (file.is_open()) {
+        Book book;
+        std::cout << "Enter book details (author, title, year, publisher, pages): ";
+        std::cin >> book.author >> book.title >> book.year >> book.publisher >> book.pages;
+        file << book.author << " " << book.title << " " << book.year << " " << book.publisher << " " << book.pages << std::endl;
+        books.push_back(book);
+        file.close();
+        std::cout << "Data added successfully!" << std::endl;
+    } else {
+        std::cout << "Failed to open the file." << std::endl;
+    }
+}
+
+void appendDataToFile(std::vector<Book>& books) {
+    std::string filename;
+    std::cout << "Enter the filename: ";
+    std::cin >> filename;
+
+    std::ofstream file(filename, std::ios::app);
+    if (file.is_open()) {
+        Book book;
+        std::cout << "Enter book details (author, title, year, publisher, pages): ";
+        std::cin >> book.author >> book.title >> book.year >> book.publisher >> book.pages;
+        file << book.author << " " << book.title << " " << book.year << " " << book.publisher << " " << book.pages << std::endl;
+        books.push_back(book);
+        file.close();
+        std::cout << "Data appended successfully!" << std::endl;
+    } else {
+        std::cout << "Failed to open the file." << std::endl;
+    }
+}
+
+void sortByTitle(std::vector<Book>& books) {
+    std::sort(books.begin(), books.end(), [](const Book& a, const Book& b) {
+        return a.title < b.title;
+    });
+    std::cout << "Database sorted by title!" << std::endl;
+}
+
+void findAuthorBooks(const std::vector<Book>& books) {
+    std::string author;
+    std::cout << "Enter the author's name: ";
+    std::cin >> author;
+
+    bool found = false;
+    for (const auto& book : books) {
+        if (book.author == author) {
+            std::cout << "Book found: " << book.title << " (" << book.year << ")" << std::endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        std::cout << "No books by the given author were found." << std::endl;
+    }
+}
+
+void findLargestBook(const std::vector<Book>& books) {
+    Book largestBook = books[0];
+    for (const auto& book : books) {
+        if (book.pages > largestBook.pages) {
+            largestBook = book;
+        }
+    }
+
+    std::cout << "The book with the largest number of pages is: " << largestBook.title << " (" << largestBook.pages << " pages)" << std::endl;
+}
+
+void findAuthorBooksByYear(const std::vector<Book>& books) {
+    std::string author;
+    int year;
+    std::cout << "Enter the author's name: ";
+    std::cin >> author;
+    std::cout << "Enter the year: ";
+    std::cin >> year;
+
+    bool found = false;
+    for (const auto& book : books) {
+        if (book.author == author && book.year >= year) {
+            std::cout << "Book found: " << book.title << " (" << book.year << ")" << std::endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        std::cout << "No books by the given author and year were found." << std::endl;
+    }
+}
+
+int main() {
+    std::vector<Book> books;
+    int choice;
+
+    do {
+        std::cout << "Select an action:\n";
+        std::cout << "1. Load data from file\n";
+        std::cout << "2. Enter new data\n";
+        std::cout << "3. Append data to file\n";
+        std::cout << "4. Sort database by title\n";
+        std::cout << "5. Find books by author\n";
+        std::cout << "6. Find the book with the largest number of pages\n";
+        std::cout << "7. Find books by author and year\n";
+        std::cout << "0. Exit\n";
+        std::cout << "Your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                loadDataFromFile(books);
+                break;
+            case 2:
+                enterNewData(books);
+                break;
+            case 3:
+                appendDataToFile(books);
+                break;
+            case 4:
+                sortByTitle(books);
+                break;
+            case 5:
+                findAuthorBooks(books);
+                break;
+            case 6:
+                findLargestBook(books);
+                break;
+            case 7:
+                findAuthorBooksByYear(books);
+                break;
+            case 0:
+                std::cout << "Exiting the program." << std::endl;
+                break;
+            default:
+                std::cout << "Invalid choice. Please try again." << std::endl;
+                break;
+        }
+    } while (choice != 0);
+
+    return 0;
+}
