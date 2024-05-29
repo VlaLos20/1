@@ -1,0 +1,182 @@
+#include <iostream>
+#include <locale>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Book {
+    string author;
+    string title;
+    int year;
+    string publisher;
+    int pages;
+};
+
+int main() {
+    setlocale(LC_ALL, "ru_RU.UTF-8"); // Установка локали на русский язык
+
+    vector<Book> books;
+    int choice;
+
+    do {
+        cout << "Выберите действие:\n";
+        cout << "1. Загрузить данные из файла\n";
+        cout << "2. Ввести новые данные\n";
+        cout << "3. Добавить данные в файл\n";
+        cout << "4. Отсортировать базу данных по названию\n";
+        cout << "5. Найти книги по автору\n";
+        cout << "6. Найти книгу с наибольшим количеством страниц\n";
+        cout << "7. Найти книги по автору и году\n";
+        cout << "0. Выйти\n";
+        cout << "Ваш выбор: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                loadDataFromFile(books);
+                break;
+            case 2:
+                enterNewData(books);
+                break;
+            case 3:
+                appendDataToFile(books);
+                break;
+            case 4:
+                sortByTitle(books);
+                break;
+            case 5:
+                findAuthorBooks(books);
+                break;
+            case 6:
+                findLargestBook(books);
+                break;
+            case 7:
+                findAuthorBooksByYear(books);
+                break;
+            case 0:
+                cout << "Выход из программы." << endl;
+                break;
+            default:
+                cout << "Неверный выбор. Попробуйте еще раз." << endl;
+                break;
+        }
+    } while (choice != 0);
+
+    return 0;
+}
+
+void loadDataFromFile(vector<Book>& books) {
+    string filename;
+    cout << "Введите имя файла: ";
+    cin >> filename;
+
+    ifstream file(filename);
+    if (file.is_open()) {
+        Book book;
+        while (file >> book.author >> book.title >> book.year >> book.publisher >> book.pages) {
+            books.push_back(book);
+        }
+        file.close();
+        cout << "Данные загружены успешно!" << endl;
+    } else {
+        cout << "Не удалось открыть файл." << endl;
+    }
+}
+
+void enterNewData(vector<Book>& books) {
+    string filename;
+    cout << "Введите имя файла: ";
+    cin >> filename;
+
+    ofstream file(filename, ios::app);
+    if (file.is_open()) {
+        Book book;
+        cout << "Введите данные книги (автор, название, год, издатель, страниц): ";
+        cin >> book.author >> book.title >> book.year >> book.publisher >> book.pages;
+        file << book.author << " " << book.title << " " << book.year << " " << book.publisher << " " << book.pages << endl;
+        books.push_back(book);
+        file.close();
+        cout << "Данные добавлены успешно!" << endl;
+    } else {
+        cout << "Не удалось открыть файл." << endl;
+    }
+}
+
+void appendDataToFile(vector<Book>& books) {
+    string filename;
+    cout << "Введите имя файла: ";
+    cin >> filename;
+
+    ofstream file(filename, ios::app);
+    if (file.is_open()) {
+        Book book;
+        cout << "Введите данные книги (автор, название, год, издатель, страниц): ";
+        cin >> book.author >> book.title >> book.year >> book.publisher >> book.pages;
+        file << book.author << " " << book.title << " " << book.year << " " << book.publisher << " " << book.pages << endl;
+        books.push_back(book);
+        file.close();
+        cout << "Данные добавлены успешно!" << endl;
+    } else {
+        cout << "Не удалось открыть файл." << endl;
+    }
+}
+
+void sortByTitle(vector<Book>& books) {
+    sort(books.begin(), books.end(), [](const Book& a, const Book& b) {
+        return a.title < b.title;
+    });
+    cout << "База данных отсортирована по названию!" << endl;
+}
+
+void findAuthorBooks(const vector<Book>& books) {
+    string author;
+    cout << "Введите имя автора: ";
+    cin >> author;
+
+    bool found = false;
+    for (const auto& book : books) {
+        if (book.author == author) {
+            cout << "Книга найдена: " << book.title << " (" << book.year << ")" << endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        cout << "Книги данного автора не найдены." << endl;
+    }
+}
+
+void findLargestBook(const vector<Book>& books) {
+    Book largestBook = books[0];
+    for (const auto& book : books) {
+        if (book.pages > largestBook.pages) {
+            largestBook = book;
+        }
+    }
+
+    cout << "Книга с наибольшим количеством страниц: " << largestBook.title << " (" << largestBook.pages << " страниц)" << endl;
+}
+
+void findAuthorBooksByYear(const vector<Book>& books) {
+    string author;
+    int year;
+    cout << "Введите имя автора: ";
+    cin >> author;
+    cout << "Введите год: ";
+    cin >> year;
+
+    bool found = false;
+    for (const auto& book : books) {
+        if (book.author == author && book.year >= year) {
+            cout << "Книга найдена: " << book.title << " (" << book.year << ")" << endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        cout << "Книги данного автора и года не найдены." << endl;
+    }
+}
